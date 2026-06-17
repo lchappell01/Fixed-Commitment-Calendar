@@ -6,11 +6,18 @@
 <title>Fixed Commitment Calendar</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:Arial,sans-serif;background:#ffffff;color:#1a1a1a;padding:1rem;}
-.page-wrap{max-width:1200px;margin:0 auto;}
+
+/* Internal scrolling — content scrolls inside the iframe, not the Canvas page */
+html,body{height:100%;overflow:hidden;}
+body{font-family:Arial,sans-serif;background:#ffffff;color:#1a1a1a;}
+
+.page-wrap{
+  height:100%;display:flex;flex-direction:column;
+  padding:.75rem;gap:.4rem;overflow:hidden;
+}
 
 /* ── Toolbar ── */
-.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:.5rem;flex-wrap:wrap;}
+.toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex-shrink:0;}
 .toolbar h1{font-size:17px;font-weight:700;color:#0064b1;flex:1;}
 .btn{font-size:12px;padding:7px 14px;border-radius:6px;cursor:pointer;font-weight:500;border:1.5px solid;}
 .btn-primary{background:#0064b1;color:#fff;border-color:#0064b1;}
@@ -18,27 +25,29 @@ body{font-family:Arial,sans-serif;background:#ffffff;color:#1a1a1a;padding:1rem;
 .btn-secondary{background:transparent;color:#555;border-color:rgba(0,0,0,0.25);}
 .btn-secondary:hover{background:#f0f0ec;}
 .btn:focus-visible{outline:2px solid #0064b1;outline-offset:2px;}
-.help-text{font-size:10px;color:#757575;line-height:1.6;margin-bottom:.6rem;}
+.help-text{font-size:10px;color:#757575;line-height:1.5;flex-shrink:0;}
 
 /* ── Selection status bar ── */
 .sel-bar{
   background:#EFF6FF;border:1px solid #93C5FD;border-radius:6px;
-  padding:5px 10px;margin-bottom:6px;
+  padding:5px 10px;flex-shrink:0;
   display:flex;align-items:center;justify-content:space-between;gap:8px;
 }
 .sel-bar-msg{font-size:11px;color:#1a1a1a;font-weight:500;}
 .sel-bar-hint{font-size:10px;color:#555;white-space:nowrap;}
 
-/* ── Main layout: left bar + calendar ── */
-.page-main{display:flex;gap:10px;align-items:flex-start;}
+/* ── Main: left bar + calendar, both scroll independently ── */
+.page-main{
+  flex:1;display:flex;gap:10px;
+  overflow:hidden;min-height:0;
+}
 
-/* Left summary bar */
+/* Left bar scrolls vertically on its own */
 .left-bar{
   width:162px;flex-shrink:0;
+  overflow-y:auto;overflow-x:hidden;
   background:#f8f8f8;border:1px solid rgba(0,0,0,0.1);border-radius:8px;
   padding:10px 8px;
-  position:sticky;top:.5rem;align-self:flex-start;
-  max-height:92vh;overflow-y:auto;
 }
 .left-bar-heading{
   font-size:9px;font-weight:700;color:#757575;
@@ -46,8 +55,6 @@ body{font-family:Arial,sans-serif;background:#ffffff;color:#1a1a1a;padding:1rem;
   margin-bottom:6px;padding-bottom:5px;
   border-bottom:1px solid rgba(0,0,0,0.08);
 }
-
-/* Category items */
 .cat-item{
   display:flex;align-items:center;justify-content:space-between;
   padding:5px 7px;margin-bottom:3px;
@@ -55,21 +62,10 @@ body{font-family:Arial,sans-serif;background:#ffffff;color:#1a1a1a;padding:1rem;
   background:#fff;gap:4px;
 }
 .cat-item:last-child{margin-bottom:0;}
-.cat-item-name{
-  font-size:10px;font-weight:600;color:#1a1a1a;
-  line-height:1.3;flex:1;word-break:break-word;
-}
-.cat-item-hours{
-  font-size:13px;font-weight:700;color:#1a1a1a;
-  white-space:nowrap;text-align:right;
-}
+.cat-item-name{font-size:10px;font-weight:600;color:#1a1a1a;line-height:1.3;flex:1;word-break:break-word;}
+.cat-item-hours{font-size:13px;font-weight:700;color:#1a1a1a;white-space:nowrap;text-align:right;}
 .cat-item-unit{font-size:8px;font-weight:400;color:#757575;display:block;text-align:right;}
-
-/* Study summary in left bar */
-.left-bar-divider{
-  border-top:1px solid rgba(0,0,0,0.1);
-  margin:8px 0;
-}
+.left-bar-divider{border-top:1px solid rgba(0,0,0,0.1);margin:8px 0;}
 .study-item{
   background:#EFF6FF;border:1px solid #BFDBFE;
   border-left:5px solid #0064b1;border-radius:5px;
@@ -80,10 +76,8 @@ body{font-family:Arial,sans-serif;background:#ffffff;color:#1a1a1a;padding:1rem;
 .study-item-val{font-size:17px;font-weight:700;color:#0064b1;line-height:1.1;}
 .study-item-note{font-size:8px;color:#757575;margin-top:2px;line-height:1.3;}
 
-/* Calendar column */
-.calendar-col{flex:1;min-width:0;}
-
-/* Table */
+/* Calendar column: vertical scroll here, horizontal in table-scroll */
+.calendar-col{flex:1;min-width:0;overflow-y:auto;overflow-x:hidden;}
 .table-scroll{overflow-x:auto;border:1px solid rgba(0,0,0,0.13);border-radius:8px;}
 .cal-table{border-collapse:collapse;width:100%;min-width:580px;}
 .cal-table th,.cal-table td{border:1px solid rgba(0,0,0,0.1);}
@@ -127,9 +121,21 @@ body{font-family:Arial,sans-serif;background:#ffffff;color:#1a1a1a;padding:1rem;
   pointer-events:none;z-index:1;
 }
 
-/* Dialog */
-dialog{border:none;border-radius:10px;padding:0;box-shadow:0 10px 36px rgba(0,0,0,0.2);max-width:360px;width:90%;background:#fff;}
-dialog::backdrop{background:rgba(0,0,0,0.45);}
+/* ── Custom modal overlay (fixed within the iframe viewport) ── */
+.cc-overlay{
+  display:none;
+  position:fixed;inset:0;
+  background:rgba(0,0,0,0.45);
+  z-index:1000;
+}
+.cc-modal{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:90%;max-width:360px;
+  background:#fff;border-radius:10px;
+  box-shadow:0 10px 36px rgba(0,0,0,0.2);
+  padding:0;
+}
 .dialog-inner{padding:20px;}
 .dialog-title{font-size:14px;font-weight:600;color:#0064b1;margin-bottom:3px;}
 .dialog-context{font-size:12px;color:#757575;margin-bottom:14px;}
@@ -140,8 +146,14 @@ dialog::backdrop{background:rgba(0,0,0,0.45);}
   border:1.5px solid rgba(0,0,0,0.2);color:#1a1a1a;background:#fff;font-family:Arial,sans-serif;
 }
 .dialog-field select:focus,.dialog-field input:focus{outline:2px solid #0064b1;border-color:#0064b1;}
-.dialog-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;padding-top:12px;border-top:1px solid rgba(0,0,0,0.08);}
-.btn-danger{background:transparent;color:#C93E1C;border:1.5px solid #C93E1C;font-size:12px;padding:7px 12px;border-radius:6px;cursor:pointer;font-family:Arial,sans-serif;}
+.dialog-actions{
+  display:flex;gap:8px;justify-content:flex-end;
+  margin-top:14px;padding-top:12px;border-top:1px solid rgba(0,0,0,0.08);
+}
+.btn-danger{
+  background:transparent;color:#C93E1C;border:1.5px solid #C93E1C;
+  font-size:12px;padding:7px 12px;border-radius:6px;cursor:pointer;font-family:Arial,sans-serif;
+}
 .btn-danger:hover{background:#fff5f3;}
 .btn-danger:focus-visible{outline:2px solid #C93E1C;outline-offset:2px;}
 .btn-sm{font-size:12px;padding:7px 14px;}
@@ -151,17 +163,19 @@ dialog::backdrop{background:rgba(0,0,0,0.45);}
 
 /* Print */
 @media print{
+  html,body{height:auto;overflow:visible;}
+  .page-wrap{height:auto;overflow:visible;display:block;}
   .no-print{display:none!important;}
-  .page-main{display:block;}
+  .page-main{display:block;overflow:visible;}
   .left-bar{display:none;}
-  .print-heading{display:block!important;}
-  body{padding:0;}
-  .page-wrap{max-width:100%;}
-  .table-scroll{border:none;overflow:visible;}
+  .calendar-col{overflow:visible;}
+  .table-scroll{overflow:visible;border:none;}
   .cal-table{font-size:8px;}
   .cal-btn{min-height:22px;}
   .cal-table thead th,.cal-btn{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
   .cal-btn.cc-sel::before{display:none;}
+  .print-heading{display:block!important;}
+  body{padding:.5rem;}
 }
 </style>
 </head>
@@ -172,7 +186,7 @@ dialog::backdrop{background:rgba(0,0,0,0.45);}
     Fixed Commitment Calendar
   </h1>
 
-  <!-- Toolbar — top, full width -->
+  <!-- Toolbar -->
   <div class="toolbar no-print">
     <h1>Fixed Commitment Calendar</h1>
     <button class="btn btn-secondary" onclick="ccClearAll()">Clear all</button>
@@ -189,10 +203,9 @@ dialog::backdrop{background:rgba(0,0,0,0.45);}
     <span class="sel-bar-hint">Enter to set &mdash; Escape to cancel</span>
   </div>
 
-  <!-- Main: left bar + calendar -->
+  <!-- Main content -->
   <div class="page-main">
 
-    <!-- Left summary/legend bar -->
     <aside class="left-bar no-print" aria-label="Category legend and weekly totals">
       <div class="left-bar-heading">Categories &amp; Hours</div>
       <div id="cc-cat-items"></div>
@@ -201,7 +214,6 @@ dialog::backdrop{background:rgba(0,0,0,0.45);}
       <div id="cc-study-items"></div>
     </aside>
 
-    <!-- Calendar -->
     <div class="calendar-col">
       <div class="table-scroll">
         <table class="cal-table" role="grid"
@@ -224,33 +236,37 @@ dialog::backdrop{background:rgba(0,0,0,0.45);}
       </div>
     </div>
 
-  </div><!-- end page-main -->
+  </div>
 
   <div id="cc-live" role="status" aria-live="polite" class="sr-only"></div>
 
 </div>
 
-<!-- Dialog -->
-<dialog id="cc-dialog" aria-labelledby="cc-dlg-title" aria-modal="true">
-  <div class="dialog-inner">
-    <h2 class="dialog-title" id="cc-dlg-title">Set Commitment</h2>
-    <p class="dialog-context" id="cc-dlg-ctx"></p>
-    <div class="dialog-field">
-      <label for="cc-sel">Category</label>
-      <select id="cc-sel" onchange="ccSelChange()"></select>
-    </div>
-    <div class="dialog-field" id="cc-custom-wrap" hidden>
-      <label for="cc-custom">Custom label</label>
-      <input type="text" id="cc-custom" maxlength="40" placeholder="Describe this commitment..."
-        onkeydown="if(event.key==='Enter'){event.preventDefault();ccDlgOk();}">
-    </div>
-    <div class="dialog-actions">
-      <button class="btn-danger" id="cc-dlg-clear" onclick="ccDlgClear()">Clear block</button>
-      <button class="btn btn-secondary btn-sm" onclick="ccDlgCancel()">Cancel</button>
-      <button class="btn btn-primary btn-sm" onclick="ccDlgOk()">OK</button>
+<!-- Custom overlay modal — position:fixed anchors to the iframe viewport -->
+<div class="cc-overlay" id="cc-overlay" onclick="ccOverlayClick(event)">
+  <div class="cc-modal" id="cc-modal"
+    role="dialog" aria-labelledby="cc-dlg-title" aria-modal="true"
+    onkeydown="ccModalKey(event)">
+    <div class="dialog-inner">
+      <h2 class="dialog-title" id="cc-dlg-title">Set Commitment</h2>
+      <p class="dialog-context" id="cc-dlg-ctx"></p>
+      <div class="dialog-field">
+        <label for="cc-sel">Category</label>
+        <select id="cc-sel" onchange="ccSelChange()"></select>
+      </div>
+      <div class="dialog-field" id="cc-custom-wrap" style="display:none;">
+        <label for="cc-custom">Custom label</label>
+        <input type="text" id="cc-custom" maxlength="40" placeholder="Describe this commitment..."
+          onkeydown="if(event.key==='Enter'){event.preventDefault();ccDlgOk();}">
+      </div>
+      <div class="dialog-actions">
+        <button class="btn-danger" id="cc-dlg-clear" onclick="ccDlgClear()">Clear block</button>
+        <button class="btn btn-secondary btn-sm" onclick="ccDlgCancel()">Cancel</button>
+        <button class="btn btn-primary btn-sm" onclick="ccDlgOk()">OK</button>
+      </div>
     </div>
   </div>
-</dialog>
+</div>
 
 <script>
 (function(){
@@ -276,15 +292,14 @@ var CATS=[
   {value:'custom',  label:'Custom\u2026',           color:'#EEF5F9',border:'#bdd6e6'}
 ];
 
-/* ── Data ── */
 var data=[];
 for(var t=0;t<TIMES.length;t++){data[t]=[];for(var d=0;d<DAYS.length;d++) data[t][d]=null;}
 
-/* ── State ── */
 var focusRow=0,focusCol=0;
 var selAnchor=null,selFocus=null;
 var isDragging=false,dragMoved=false,suppressClick=false;
 var dlgRange=null;
+var dlgTriggerBtn=null;
 
 /* ── Selection ── */
 function getRange(){
@@ -359,6 +374,7 @@ function makeBtn(ti,di){
   btn.tabIndex=(ti===0&&di===0)?0:-1;
   btn.addEventListener('click',function(){
     if(suppressClick){suppressClick=false;return;}
+    dlgTriggerBtn=btn;
     selAnchor={row:ti,col:di};selFocus={row:ti,col:di};updateSelUI();openDlgForSel();
   });
   btn.addEventListener('keydown',function(e){gridKey(e,ti,di);});
@@ -385,8 +401,7 @@ function renderBtn(btn,ti,di){
     var cat=getCat(cell.category);
     var bg=cat?cat.color:'#F3F4F6',bdr=cat?cat.border:'#D1D5DB';
     btn.className='cal-btn filled'+(sel?' cc-sel':'');
-    btn.style.background=bg;
-    btn.style.borderLeft='5px solid '+bdr;
+    btn.style.background=bg;btn.style.borderLeft='5px solid '+bdr;
     var catName=(cat&&cell.category!=='custom')?cat.label:'';
     var html='<span class="cell-label">'+esc(cell.label)+'</span>';
     if(catName&&catName!==cell.label)
@@ -432,6 +447,7 @@ function gridKey(e,ti,di){
   switch(e.key){
     case 'Enter':case ' ':
       e.preventDefault();
+      dlgTriggerBtn=getBtn(ti,di);
       if(!selAnchor){selAnchor={row:ti,col:di};selFocus={row:ti,col:di};}
       openDlgForSel();break;
     case 'Delete':case 'Backspace':
@@ -441,7 +457,34 @@ function gridKey(e,ti,di){
   }
 }
 
-/* ── Dialog ── */
+/* ── Modal ── */
+function openModal(){
+  var overlay=document.getElementById('cc-overlay');
+  overlay.style.display='block';
+  document.querySelector('.page-wrap').setAttribute('aria-hidden','true');
+  setTimeout(function(){document.getElementById('cc-sel').focus();},30);
+}
+function closeModal(){
+  var overlay=document.getElementById('cc-overlay');
+  overlay.style.display='none';
+  document.querySelector('.page-wrap').removeAttribute('aria-hidden');
+  if(dlgTriggerBtn) dlgTriggerBtn.focus();
+}
+window.ccOverlayClick=function(e){
+  if(e.target===document.getElementById('cc-overlay')) ccDlgCancel();
+};
+window.ccModalKey=function(e){
+  if(e.key==='Escape'){e.preventDefault();ccDlgCancel();return;}
+  if(e.key==='Tab'){
+    var modal=document.getElementById('cc-modal');
+    var els=Array.from(modal.querySelectorAll('button:not([disabled]),input:not([disabled]),select:not([disabled])'));
+    var first=els[0],last=els[els.length-1];
+    if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+    else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+  }
+};
+
+/* ── Dialog logic ── */
 function openDlgForSel(){
   var g=getRange();if(!g) return;dlgRange=g;
   var count=(g.r1-g.r0+1)*(g.c1-g.c0+1),single=count===1;
@@ -459,16 +502,17 @@ function openDlgForSel(){
   sel.innerHTML='';
   CATS.forEach(function(c){var opt=document.createElement('option');opt.value=c.value;opt.textContent=c.label;sel.appendChild(opt);});
   var existing=single?data[g.r0][g.c0]:null;
-  if(existing){sel.value=existing.category;custom.value=(existing.category==='custom')?existing.label:'';customWrap.hidden=(existing.category!=='custom');}
-  else{sel.value='';custom.value='';customWrap.hidden=true;}
+  if(existing){sel.value=existing.category;custom.value=(existing.category==='custom')?existing.label:'';customWrap.style.display=(existing.category==='custom')?'':'none';}
+  else{sel.value='';custom.value='';customWrap.style.display='none';}
   var hasContent=false;
   outer:for(var r=g.r0;r<=g.r1;r++) for(var c=g.c0;c<=g.c1;c++) if(data[r][c]){hasContent=true;break outer;}
   document.getElementById('cc-dlg-clear').style.visibility=hasContent?'visible':'hidden';
-  document.getElementById('cc-dialog').showModal();sel.focus();
+  openModal();
 }
 window.ccSelChange=function(){
-  var sel=document.getElementById('cc-sel'),wrap=document.getElementById('cc-custom-wrap');
-  wrap.hidden=(sel.value!=='custom');
+  var sel=document.getElementById('cc-sel');
+  var wrap=document.getElementById('cc-custom-wrap');
+  wrap.style.display=(sel.value==='custom')?'':'none';
   if(sel.value==='custom') document.getElementById('cc-custom').focus();
 };
 window.ccDlgOk=function(){
@@ -481,67 +525,45 @@ window.ccDlgOk=function(){
   for(var r=g.r0;r<=g.r1;r++) for(var c=g.c0;c<=g.c1;c++){
     data[r][c]={category:cat,label:label};var b=getBtn(r,c);if(b) renderBtn(b,r,c);
   }
-  updateSummary();clearSel();closeDlg();
+  updateSummary();clearSel();closeModal();
 };
 window.ccDlgClear=function(){
   var g=dlgRange;
   for(var r=g.r0;r<=g.r1;r++) for(var c=g.c0;c<=g.c1;c++){
     data[r][c]=null;var b=getBtn(r,c);if(b) renderBtn(b,r,c);
   }
-  updateSummary();clearSel();closeDlg();
+  updateSummary();clearSel();closeModal();
 };
-window.ccDlgCancel=function(){closeDlg();};
-function closeDlg(){
-  document.getElementById('cc-dialog').close();
-  focusRow=dlgRange?dlgRange.r0:focusRow;focusCol=dlgRange?dlgRange.c0:focusCol;
-  syncTabIndex();var b=getBtn(focusRow,focusCol);if(b) b.focus();
-}
-var dlgEl=document.getElementById('cc-dialog');
-dlgEl.addEventListener('click',function(e){if(e.target===this)ccDlgCancel();});
-dlgEl.addEventListener('cancel',function(e){e.preventDefault();ccDlgCancel();});
+window.ccDlgCancel=function(){clearSel();closeModal();};
 
 /* ── Left bar ── */
 function buildLeftBar(){
-  /* Category items */
-  var catWrap=document.getElementById('cc-cat-items');
-  catWrap.innerHTML='';
+  var catWrap=document.getElementById('cc-cat-items');catWrap.innerHTML='';
   CATS.slice(1).forEach(function(cat){
-    var item=document.createElement('div');
-    item.className='cat-item';
-    item.style.borderLeftColor=cat.border||'#ccc';
-    item.style.background=cat.color||'#fff';
-
-    var name=document.createElement('span');
-    name.className='cat-item-name';
+    var item=document.createElement('div');item.className='cat-item';
+    item.style.borderLeftColor=cat.border||'#ccc';item.style.background=cat.color||'#fff';
+    var name=document.createElement('span');name.className='cat-item-name';
     name.textContent=(cat.label==='Custom\u2026')?'Custom':cat.label;
-
     var right=document.createElement('span');
-    var hrs=document.createElement('span');
-    hrs.className='cat-item-hours';hrs.id='sum-'+cat.value;hrs.textContent='0';
-    var unit=document.createElement('span');
-    unit.className='cat-item-unit';unit.setAttribute('aria-hidden','true');unit.textContent='hrs';
+    var hrs=document.createElement('span');hrs.className='cat-item-hours';hrs.id='sum-'+cat.value;hrs.textContent='0';
+    var unit=document.createElement('span');unit.className='cat-item-unit';unit.setAttribute('aria-hidden','true');unit.textContent='hrs';
     right.appendChild(hrs);right.appendChild(unit);
-
-    item.appendChild(name);item.appendChild(right);
-    catWrap.appendChild(item);
+    item.appendChild(name);item.appendChild(right);catWrap.appendChild(item);
   });
-
-  /* Study summary items */
-  var studyWrap=document.getElementById('cc-study-items');
-  studyWrap.innerHTML='';
-  [
-    {id:'cc-bar-sched',noteId:'',     label:'Scheduled for study', val:'0',    note:''},
-    {id:'cc-bar-needed',noteId:'cc-bar-note',label:'Needed for study',val:'0\u20130',note:'Based on 0 class hours'}
+  var studyWrap=document.getElementById('cc-study-items');studyWrap.innerHTML='';
+  [{id:'cc-bar-sched',noteId:'',label:'Scheduled for study',val:'0',note:''},
+   {id:'cc-bar-needed',noteId:'cc-bar-note',label:'Needed for study',val:'0\u20130',note:'Based on 0 class hours'}
   ].forEach(function(item){
     var card=document.createElement('div');card.className='study-item';
     var lbl=document.createElement('div');lbl.className='study-item-name';lbl.textContent=item.label;
-    var val=document.createElement('div');val.className='study-item-val';val.id=item.id;val.textContent=item.val;
+    var val=document.createElement('div');val.className='study-item-val';val.id=item.id;
+    var num=document.createTextNode(item.val);
     var unit=document.createElement('span');unit.style.cssText='font-size:10px;font-weight:400;color:#757575;';
-    unit.textContent=' hrs';val.appendChild(unit);
+    unit.textContent=' hrs';
+    val.appendChild(num);val.appendChild(unit);
     card.appendChild(lbl);card.appendChild(val);
     if(item.note){
-      var note=document.createElement('div');note.className='study-item-note';
-      note.id=item.noteId;note.textContent=item.note;card.appendChild(note);
+      var note=document.createElement('div');note.className='study-item-note';note.id=item.noteId;note.textContent=item.note;card.appendChild(note);
     }
     studyWrap.appendChild(card);
   });
@@ -554,17 +576,15 @@ function updateSummary(){
     if(data[t][d]&&counts.hasOwnProperty(data[t][d].category)) counts[data[t][d].category]++;
   CATS.slice(1).forEach(function(c){
     var el=document.getElementById('sum-'+c.value);
-    if(el){
-      el.textContent=counts[c.value]||0;
-    }
+    if(el) el.textContent=counts[c.value]||0;
   });
   var study=counts['study']||0,cls=counts['class']||0;
   var minN=cls*2,maxN=cls*3;
   var se=document.getElementById('cc-bar-sched');
   var ne=document.getElementById('cc-bar-needed');
   var no=document.getElementById('cc-bar-note');
-  if(se){se.childNodes[0].nodeValue=study;}
-  if(ne){ne.childNodes[0].nodeValue=minN+'\u2013'+maxN;}
+  if(se) se.firstChild.nodeValue=study;
+  if(ne) ne.firstChild.nodeValue=minN+'\u2013'+maxN;
   if(no) no.textContent='Based on '+cls+' class hr'+(cls!==1?'s':'');
   var live=document.getElementById('cc-live');
   if(live) live.textContent='Study scheduled: '+study+' hrs. Needed: '+minN+' to '+maxN+'.';
@@ -581,10 +601,7 @@ window.ccClearAll=function(){
 };
 
 /* ── Init ── */
-buildTable();
-buildLeftBar();
-updateSummary();
-syncTabIndex();
+buildTable();buildLeftBar();updateSummary();syncTabIndex();
 
 })();
 </script>
