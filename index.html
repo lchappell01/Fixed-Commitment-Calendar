@@ -9,53 +9,93 @@
 body{font-family:Arial,sans-serif;background:#ffffff;color:#1a1a1a;padding:1rem;}
 .page-wrap{max-width:1200px;margin:0 auto;}
 
-/* ── Side-by-side layout ── */
-.page-row{display:flex;gap:14px;align-items:flex-start;}
-
-/* Toolbar sidebar */
-.toolbar-side{
-  width:152px;flex-shrink:0;
-  display:flex;flex-direction:column;gap:8px;
-  position:sticky;top:.75rem;align-self:flex-start;
-}
-.toolbar-side h1{font-size:14px;font-weight:700;color:#0064b1;line-height:1.4;}
-.btn{
-  font-size:12px;padding:7px 10px;border-radius:6px;
-  cursor:pointer;font-weight:500;border:1.5px solid;
-  width:100%;text-align:center;
-}
+/* ── Toolbar ── */
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:.5rem;flex-wrap:wrap;}
+.toolbar h1{font-size:17px;font-weight:700;color:#0064b1;flex:1;}
+.btn{font-size:12px;padding:7px 14px;border-radius:6px;cursor:pointer;font-weight:500;border:1.5px solid;}
 .btn-primary{background:#0064b1;color:#fff;border-color:#0064b1;}
 .btn-primary:hover{background:#004f8e;}
 .btn-secondary{background:transparent;color:#555;border-color:rgba(0,0,0,0.25);}
 .btn-secondary:hover{background:#f0f0ec;}
 .btn:focus-visible{outline:2px solid #0064b1;outline-offset:2px;}
-.help-text{font-size:10px;color:#757575;line-height:1.6;margin-top:2px;}
+.help-text{font-size:10px;color:#757575;line-height:1.6;margin-bottom:.6rem;}
 
-/* Calendar column */
-.calendar-col{flex:1;min-width:0;}
-
-/* Selection status bar */
+/* ── Selection status bar ── */
 .sel-bar{
   background:#EFF6FF;border:1px solid #93C5FD;border-radius:6px;
-  padding:6px 10px;margin-bottom:6px;
+  padding:5px 10px;margin-bottom:6px;
   display:flex;align-items:center;justify-content:space-between;gap:8px;
 }
 .sel-bar-msg{font-size:11px;color:#1a1a1a;font-weight:500;}
 .sel-bar-hint{font-size:10px;color:#555;white-space:nowrap;}
 
+/* ── Main layout: left bar + calendar ── */
+.page-main{display:flex;gap:10px;align-items:flex-start;}
+
+/* Left summary bar */
+.left-bar{
+  width:162px;flex-shrink:0;
+  background:#f8f8f8;border:1px solid rgba(0,0,0,0.1);border-radius:8px;
+  padding:10px 8px;
+  position:sticky;top:.5rem;align-self:flex-start;
+  max-height:92vh;overflow-y:auto;
+}
+.left-bar-heading{
+  font-size:9px;font-weight:700;color:#757575;
+  text-transform:uppercase;letter-spacing:.07em;
+  margin-bottom:6px;padding-bottom:5px;
+  border-bottom:1px solid rgba(0,0,0,0.08);
+}
+
+/* Category items */
+.cat-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:5px 7px;margin-bottom:3px;
+  border-radius:5px;border-left:5px solid #ccc;
+  background:#fff;gap:4px;
+}
+.cat-item:last-child{margin-bottom:0;}
+.cat-item-name{
+  font-size:10px;font-weight:600;color:#1a1a1a;
+  line-height:1.3;flex:1;word-break:break-word;
+}
+.cat-item-hours{
+  font-size:13px;font-weight:700;color:#1a1a1a;
+  white-space:nowrap;text-align:right;
+}
+.cat-item-unit{font-size:8px;font-weight:400;color:#757575;display:block;text-align:right;}
+
+/* Study summary in left bar */
+.left-bar-divider{
+  border-top:1px solid rgba(0,0,0,0.1);
+  margin:8px 0;
+}
+.study-item{
+  background:#EFF6FF;border:1px solid #BFDBFE;
+  border-left:5px solid #0064b1;border-radius:5px;
+  padding:6px 7px;margin-bottom:3px;
+}
+.study-item:last-child{margin-bottom:0;}
+.study-item-name{font-size:9px;font-weight:600;color:#1a1a1a;margin-bottom:2px;line-height:1.3;}
+.study-item-val{font-size:17px;font-weight:700;color:#0064b1;line-height:1.1;}
+.study-item-note{font-size:8px;color:#757575;margin-top:2px;line-height:1.3;}
+
+/* Calendar column */
+.calendar-col{flex:1;min-width:0;}
+
 /* Table */
 .table-scroll{overflow-x:auto;border:1px solid rgba(0,0,0,0.13);border-radius:8px;}
-.cal-table{border-collapse:collapse;width:100%;min-width:620px;}
+.cal-table{border-collapse:collapse;width:100%;min-width:580px;}
 .cal-table th,.cal-table td{border:1px solid rgba(0,0,0,0.1);}
 .cal-table thead th{
   background:#0064b1;color:#fff;font-size:11px;font-weight:600;
   padding:6px 3px;text-align:center;white-space:nowrap;
 }
-.cal-table thead th:first-child{background:#004f8e;min-width:66px;width:66px;}
+.cal-table thead th:first-child{background:#004f8e;min-width:64px;width:64px;}
 .time-cell{
   font-size:10px;color:#555;font-weight:500;
   padding:0 5px;text-align:right;white-space:nowrap;
-  background:#f8f8f8;width:66px;
+  background:#f8f8f8;width:64px;
 }
 
 /* Cell buttons */
@@ -78,9 +118,8 @@ body{font-family:Arial,sans-serif;background:#ffffff;color:#1a1a1a;padding:1rem;
   display:block;position:relative;z-index:2;
 }
 .cell-cat{
-  font-size:9px;font-weight:400;max-width:96%;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-  display:block;opacity:.7;position:relative;z-index:2;
+  font-size:9px;max-width:96%;overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap;display:block;opacity:.7;position:relative;z-index:2;
 }
 .cal-btn.cc-sel::before{
   content:'';position:absolute;inset:0;
@@ -88,48 +127,8 @@ body{font-family:Arial,sans-serif;background:#ffffff;color:#1a1a1a;padding:1rem;
   pointer-events:none;z-index:1;
 }
 
-/* ── Summary section ── */
-.summary-section{
-  margin-top:1rem;padding:16px 18px;
-  background:#f8f8f8;border:1px solid rgba(0,0,0,0.1);border-radius:10px;
-}
-.summary-heading{
-  font-size:13px;font-weight:700;color:#0064b1;
-  margin-bottom:12px;padding-bottom:8px;
-  border-bottom:1px solid rgba(0,0,0,0.08);
-}
-.sum-cat-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(110px,1fr));
-  gap:7px;margin-bottom:12px;
-}
-.sum-cat-card{
-  background:#fff;border:1px solid rgba(0,0,0,0.08);
-  border-left:4px solid #ccc;border-radius:7px;
-  padding:9px 11px;display:flex;flex-direction:column;gap:4px;
-}
-.sum-cat-name{font-size:11px;font-weight:600;color:#1a1a1a;line-height:1.3;}
-.sum-cat-hours{font-size:20px;font-weight:700;color:#1a1a1a;line-height:1.1;}
-.sum-cat-label{font-size:9px;color:#757575;margin-top:1px;}
-.sum-study-row{
-  display:grid;grid-template-columns:1fr 1fr;gap:7px;
-  padding-top:12px;border-top:1px solid rgba(0,0,0,0.08);
-}
-.sum-study-card{
-  background:#EFF6FF;border:1px solid #BFDBFE;
-  border-left:4px solid #0064b1;border-radius:7px;
-  padding:12px 14px;display:flex;flex-direction:column;gap:3px;
-}
-.sum-study-name{font-size:11px;font-weight:600;color:#1a1a1a;}
-.sum-study-val{font-size:24px;font-weight:700;color:#0064b1;line-height:1.1;}
-.sum-study-note{font-size:10px;color:#757575;margin-top:2px;}
-
 /* Dialog */
-dialog{
-  border:none;border-radius:10px;padding:0;
-  box-shadow:0 10px 36px rgba(0,0,0,0.2);
-  max-width:360px;width:90%;background:#fff;
-}
+dialog{border:none;border-radius:10px;padding:0;box-shadow:0 10px 36px rgba(0,0,0,0.2);max-width:360px;width:90%;background:#fff;}
 dialog::backdrop{background:rgba(0,0,0,0.45);}
 .dialog-inner{padding:20px;}
 .dialog-title{font-size:14px;font-weight:600;color:#0064b1;margin-bottom:3px;}
@@ -141,17 +140,11 @@ dialog::backdrop{background:rgba(0,0,0,0.45);}
   border:1.5px solid rgba(0,0,0,0.2);color:#1a1a1a;background:#fff;font-family:Arial,sans-serif;
 }
 .dialog-field select:focus,.dialog-field input:focus{outline:2px solid #0064b1;border-color:#0064b1;}
-.dialog-actions{
-  display:flex;gap:8px;justify-content:flex-end;
-  margin-top:14px;padding-top:12px;border-top:1px solid rgba(0,0,0,0.08);
-}
-.btn-danger{
-  background:transparent;color:#C93E1C;border:1.5px solid #C93E1C;
-  font-size:12px;padding:7px 12px;border-radius:6px;cursor:pointer;font-family:Arial,sans-serif;
-}
+.dialog-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;padding-top:12px;border-top:1px solid rgba(0,0,0,0.08);}
+.btn-danger{background:transparent;color:#C93E1C;border:1.5px solid #C93E1C;font-size:12px;padding:7px 12px;border-radius:6px;cursor:pointer;font-family:Arial,sans-serif;}
 .btn-danger:hover{background:#fff5f3;}
 .btn-danger:focus-visible{outline:2px solid #C93E1C;outline-offset:2px;}
-.btn-dlg{font-size:12px;padding:7px 14px;}
+.btn-sm{font-size:12px;padding:7px 14px;}
 
 /* Utility */
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
@@ -159,19 +152,16 @@ dialog::backdrop{background:rgba(0,0,0,0.45);}
 /* Print */
 @media print{
   .no-print{display:none!important;}
-  .page-row{display:block;}
-  .toolbar-side{display:none;}
+  .page-main{display:block;}
+  .left-bar{display:none;}
   .print-heading{display:block!important;}
   body{padding:0;}
   .page-wrap{max-width:100%;}
   .table-scroll{border:none;overflow:visible;}
   .cal-table{font-size:8px;}
-  .cal-btn{min-height:24px;}
-  .cal-table thead th,.cal-btn,.sum-cat-card,.sum-study-card{
-    -webkit-print-color-adjust:exact;print-color-adjust:exact;
-  }
+  .cal-btn{min-height:22px;}
+  .cal-table thead th,.cal-btn{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
   .cal-btn.cc-sel::before{display:none;}
-  .summary-section{break-inside:avoid;margin-top:.5rem;}
 }
 </style>
 </head>
@@ -182,28 +172,40 @@ dialog::backdrop{background:rgba(0,0,0,0.45);}
     Fixed Commitment Calendar
   </h1>
 
-  <div class="page-row">
+  <!-- Toolbar — top, full width -->
+  <div class="toolbar no-print">
+    <h1>Fixed Commitment Calendar</h1>
+    <button class="btn btn-secondary" onclick="ccClearAll()">Clear all</button>
+    <button class="btn btn-primary" onclick="window.print()">Print calendar</button>
+  </div>
+  <p class="help-text no-print">
+    <strong>Mouse:</strong> Click a cell to label it. Click and drag to select a range and label all at once. &nbsp;
+    <strong>Keyboard:</strong> Tab to enter &bull; Arrow keys to move &bull; Shift+Arrow to extend selection &bull; Enter to set &bull; Delete to clear &bull; Escape to cancel.
+  </p>
 
-    <!-- Toolbar sidebar -->
-    <aside class="toolbar-side no-print" aria-label="Calendar controls">
-      <h1>Fixed Commitment Calendar</h1>
-      <button class="btn btn-secondary" onclick="ccClearAll()">Clear all</button>
-      <button class="btn btn-primary" onclick="window.print()">Print calendar</button>
-      <p class="help-text">
-        <strong>Mouse:</strong> Click a cell or click &amp; drag to select a range.<br><br>
-        <strong>Keyboard:</strong> Tab to enter &bull; Arrow keys to move &bull; Shift+Arrow to select &bull; Enter to set &bull; Delete to clear &bull; Escape to cancel.
-      </p>
+  <!-- Selection bar -->
+  <div id="cc-sel-bar" class="sel-bar no-print" hidden aria-live="polite" aria-atomic="true">
+    <span class="sel-bar-msg" id="cc-sel-msg"></span>
+    <span class="sel-bar-hint">Enter to set &mdash; Escape to cancel</span>
+  </div>
+
+  <!-- Main: left bar + calendar -->
+  <div class="page-main">
+
+    <!-- Left summary/legend bar -->
+    <aside class="left-bar no-print" aria-label="Category legend and weekly totals">
+      <div class="left-bar-heading">Categories &amp; Hours</div>
+      <div id="cc-cat-items"></div>
+      <div class="left-bar-divider"></div>
+      <div class="left-bar-heading">Study Summary</div>
+      <div id="cc-study-items"></div>
     </aside>
 
     <!-- Calendar -->
     <div class="calendar-col">
-      <div id="cc-sel-bar" class="sel-bar no-print" hidden aria-live="polite" aria-atomic="true">
-        <span class="sel-bar-msg" id="cc-sel-msg"></span>
-        <span class="sel-bar-hint">Enter to set &mdash; Escape to cancel</span>
-      </div>
       <div class="table-scroll">
         <table class="cal-table" role="grid"
-          aria-label="Weekly commitment calendar. Tab to enter, arrow keys to navigate, Shift and arrow keys to select a range."
+          aria-label="Weekly commitment calendar. Tab to enter, arrow keys to move, Shift and arrow keys to select a range."
           id="cc-table">
           <thead>
             <tr>
@@ -222,13 +224,7 @@ dialog::backdrop{background:rgba(0,0,0,0.45);}
       </div>
     </div>
 
-  </div><!-- end page-row -->
-
-  <!-- Summary -->
-  <div class="summary-section" id="cc-summary-section"
-    role="region" aria-label="Weekly commitment summary"
-    aria-live="polite" aria-atomic="false">
-  </div>
+  </div><!-- end page-main -->
 
   <div id="cc-live" role="status" aria-live="polite" class="sr-only"></div>
 
@@ -250,8 +246,8 @@ dialog::backdrop{background:rgba(0,0,0,0.45);}
     </div>
     <div class="dialog-actions">
       <button class="btn-danger" id="cc-dlg-clear" onclick="ccDlgClear()">Clear block</button>
-      <button class="btn btn-secondary btn-dlg" onclick="ccDlgCancel()">Cancel</button>
-      <button class="btn btn-primary btn-dlg" onclick="ccDlgOk()">OK</button>
+      <button class="btn btn-secondary btn-sm" onclick="ccDlgCancel()">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="ccDlgOk()">OK</button>
     </div>
   </div>
 </dialog>
@@ -259,7 +255,6 @@ dialog::backdrop{background:rgba(0,0,0,0.45);}
 <script>
 (function(){
 
-/* ── CONSTANTS ── */
 var TIMES=[
   '5 a.m.','6 a.m.','7 a.m.','8 a.m.','9 a.m.','10 a.m.','11 a.m.',
   'Noon','1 p.m.','2 p.m.','3 p.m.','4 p.m.','5 p.m.','6 p.m.',
@@ -267,11 +262,6 @@ var TIMES=[
   '1 a.m.','2 a.m.','3 a.m.','4 a.m.'
 ];
 var DAYS=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-
-/* Color scheme:
-   border = provided hex (darker accent)
-   color  = light tint (15% color + 85% white) for backgrounds
-   All tints produce contrast ratios >10:1 with #1a1a1a text */
 var CATS=[
   {value:'',        label:'\u2014 Select a category \u2014',color:'',       border:''},
   {value:'class',   label:'Class',                  color:'#FEECDE',border:'#f58025'},
@@ -286,17 +276,17 @@ var CATS=[
   {value:'custom',  label:'Custom\u2026',           color:'#EEF5F9',border:'#bdd6e6'}
 ];
 
-/* ── DATA ── */
+/* ── Data ── */
 var data=[];
 for(var t=0;t<TIMES.length;t++){data[t]=[];for(var d=0;d<DAYS.length;d++) data[t][d]=null;}
 
-/* ── STATE ── */
+/* ── State ── */
 var focusRow=0,focusCol=0;
 var selAnchor=null,selFocus=null;
 var isDragging=false,dragMoved=false,suppressClick=false;
 var dlgRange=null;
 
-/* ── SELECTION ── */
+/* ── Selection ── */
 function getRange(){
   if(!selAnchor||!selFocus) return null;
   return{r0:Math.min(selAnchor.row,selFocus.row),r1:Math.max(selAnchor.row,selFocus.row),
@@ -314,7 +304,7 @@ function updateSelUI(){
   if(count>1){
     var g=getRange();var h=g.r1-g.r0+1,dy=g.c1-g.c0+1;
     bar.hidden=false;
-    msg.textContent=count+' cells selected \u2014 '+h+' hour'+(h!==1?'s':'')+' \u00d7 '+dy+' day'+(dy!==1?'s':'');
+    msg.textContent=count+' cells selected \u2014 '+h+' hr'+(h!==1?'s':'')+' \u00d7 '+dy+' day'+(dy!==1?'s':'');
   } else {bar.hidden=true;}
 }
 function clearSel(){selAnchor=null;selFocus=null;updateSelUI();}
@@ -326,7 +316,7 @@ function deleteSel(){
   updateSummary();clearSel();
 }
 
-/* ── TABLE ── */
+/* ── Table ── */
 function buildTable(){
   var tbody=document.getElementById('cc-body');
   tbody.innerHTML='';
@@ -375,7 +365,7 @@ function makeBtn(ti,di){
   renderBtn(btn,ti,di);return btn;
 }
 
-/* ── RENDER ── */
+/* ── Render ── */
 function getCat(v){for(var i=0;i<CATS.length;i++) if(CATS[i].value===v) return CATS[i];return null;}
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function ariaLbl(ti,di){
@@ -395,7 +385,8 @@ function renderBtn(btn,ti,di){
     var cat=getCat(cell.category);
     var bg=cat?cat.color:'#F3F4F6',bdr=cat?cat.border:'#D1D5DB';
     btn.className='cal-btn filled'+(sel?' cc-sel':'');
-    btn.style.background=bg;btn.style.borderLeft='3px solid '+bdr;
+    btn.style.background=bg;
+    btn.style.borderLeft='5px solid '+bdr;
     var catName=(cat&&cell.category!=='custom')?cat.label:'';
     var html='<span class="cell-label">'+esc(cell.label)+'</span>';
     if(catName&&catName!==cell.label)
@@ -405,7 +396,7 @@ function renderBtn(btn,ti,di){
   btn.setAttribute('aria-label',ariaLbl(ti,di));
 }
 
-/* ── TAB INDEX ── */
+/* ── Tab index ── */
 function syncTabIndex(){
   document.querySelectorAll('.cal-btn').forEach(function(b){
     b.tabIndex=(parseInt(b.dataset.row)===focusRow&&parseInt(b.dataset.col)===focusCol)?0:-1;
@@ -417,7 +408,7 @@ function moveFocus(r,c){
   focusRow=r;focusCol=c;syncTabIndex();var b=getBtn(r,c);if(b) b.focus();
 }
 
-/* ── KEYBOARD ── */
+/* ── Keyboard ── */
 function gridKey(e,ti,di){
   var shift=e.shiftKey,nr=ti,nc=di;
   var arrows=['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Home','End'];
@@ -450,7 +441,7 @@ function gridKey(e,ti,di){
   }
 }
 
-/* ── DIALOG ── */
+/* ── Dialog ── */
 function openDlgForSel(){
   var g=getRange();if(!g) return;dlgRange=g;
   var count=(g.r1-g.r0+1)*(g.c1-g.c0+1),single=count===1;
@@ -509,61 +500,77 @@ var dlgEl=document.getElementById('cc-dialog');
 dlgEl.addEventListener('click',function(e){if(e.target===this)ccDlgCancel();});
 dlgEl.addEventListener('cancel',function(e){e.preventDefault();ccDlgCancel();});
 
-/* ── SUMMARY ── */
-function buildSummarySection(){
-  var section=document.getElementById('cc-summary-section');section.innerHTML='';
-  var h2=document.createElement('h2');h2.className='summary-heading';
-  h2.textContent='Weekly Commitment Summary';section.appendChild(h2);
-  var grid=document.createElement('div');grid.className='sum-cat-grid';
+/* ── Left bar ── */
+function buildLeftBar(){
+  /* Category items */
+  var catWrap=document.getElementById('cc-cat-items');
+  catWrap.innerHTML='';
   CATS.slice(1).forEach(function(cat){
-    var card=document.createElement('div');
-    card.className='sum-cat-card';
-    card.style.background=cat.color||'#f3f4f6';
-    card.style.borderLeftColor=cat.border||'#ccc';
-    var name=document.createElement('div');name.className='sum-cat-name';
+    var item=document.createElement('div');
+    item.className='cat-item';
+    item.style.borderLeftColor=cat.border||'#ccc';
+    item.style.background=cat.color||'#fff';
+
+    var name=document.createElement('span');
+    name.className='cat-item-name';
     name.textContent=(cat.label==='Custom\u2026')?'Custom':cat.label;
-    var hours=document.createElement('div');hours.className='sum-cat-hours';
-    hours.id='sum-'+cat.value;hours.textContent='0';
-    var lbl=document.createElement('div');lbl.className='sum-cat-label';
-    lbl.setAttribute('aria-hidden','true');lbl.textContent='hours this week';
-    card.appendChild(name);card.appendChild(hours);card.appendChild(lbl);
-    grid.appendChild(card);
+
+    var right=document.createElement('span');
+    var hrs=document.createElement('span');
+    hrs.className='cat-item-hours';hrs.id='sum-'+cat.value;hrs.textContent='0';
+    var unit=document.createElement('span');
+    unit.className='cat-item-unit';unit.setAttribute('aria-hidden','true');unit.textContent='hrs';
+    right.appendChild(hrs);right.appendChild(unit);
+
+    item.appendChild(name);item.appendChild(right);
+    catWrap.appendChild(item);
   });
-  section.appendChild(grid);
-  var studyRow=document.createElement('div');studyRow.className='sum-study-row';
-  [{id:'cc-study-sched',noteId:'',label:'Hours scheduled for study',val:'0',note:''},
-   {id:'cc-study-needed',noteId:'cc-study-note',label:'Hours needed for study',val:'0\u20130',note:'Based on 0 class hours'}
+
+  /* Study summary items */
+  var studyWrap=document.getElementById('cc-study-items');
+  studyWrap.innerHTML='';
+  [
+    {id:'cc-bar-sched',noteId:'',     label:'Scheduled for study', val:'0',    note:''},
+    {id:'cc-bar-needed',noteId:'cc-bar-note',label:'Needed for study',val:'0\u20130',note:'Based on 0 class hours'}
   ].forEach(function(item){
-    var card=document.createElement('div');card.className='sum-study-card';
-    var lbl=document.createElement('div');lbl.className='sum-study-name';lbl.textContent=item.label;
-    var val=document.createElement('div');val.className='sum-study-val';val.id=item.id;val.textContent=item.val;
+    var card=document.createElement('div');card.className='study-item';
+    var lbl=document.createElement('div');lbl.className='study-item-name';lbl.textContent=item.label;
+    var val=document.createElement('div');val.className='study-item-val';val.id=item.id;val.textContent=item.val;
+    var unit=document.createElement('span');unit.style.cssText='font-size:10px;font-weight:400;color:#757575;';
+    unit.textContent=' hrs';val.appendChild(unit);
     card.appendChild(lbl);card.appendChild(val);
     if(item.note){
-      var note=document.createElement('div');note.className='sum-study-note';
+      var note=document.createElement('div');note.className='study-item-note';
       note.id=item.noteId;note.textContent=item.note;card.appendChild(note);
     }
-    studyRow.appendChild(card);
+    studyWrap.appendChild(card);
   });
-  section.appendChild(studyRow);
 }
+
+/* ── Summary update ── */
 function updateSummary(){
   var counts={};CATS.slice(1).forEach(function(c){counts[c.value]=0;});
   for(var t=0;t<TIMES.length;t++) for(var d=0;d<DAYS.length;d++)
     if(data[t][d]&&counts.hasOwnProperty(data[t][d].category)) counts[data[t][d].category]++;
-  CATS.slice(1).forEach(function(c){var el=document.getElementById('sum-'+c.value);if(el) el.textContent=counts[c.value]||0;});
+  CATS.slice(1).forEach(function(c){
+    var el=document.getElementById('sum-'+c.value);
+    if(el){
+      el.textContent=counts[c.value]||0;
+    }
+  });
   var study=counts['study']||0,cls=counts['class']||0;
   var minN=cls*2,maxN=cls*3;
-  var se=document.getElementById('cc-study-sched');
-  var ne=document.getElementById('cc-study-needed');
-  var no=document.getElementById('cc-study-note');
-  if(se) se.textContent=study;
-  if(ne) ne.textContent=minN+'\u2013'+maxN;
-  if(no) no.textContent='Based on '+cls+' class hour'+(cls!==1?'s':'');
+  var se=document.getElementById('cc-bar-sched');
+  var ne=document.getElementById('cc-bar-needed');
+  var no=document.getElementById('cc-bar-note');
+  if(se){se.childNodes[0].nodeValue=study;}
+  if(ne){ne.childNodes[0].nodeValue=minN+'\u2013'+maxN;}
+  if(no) no.textContent='Based on '+cls+' class hr'+(cls!==1?'s':'');
   var live=document.getElementById('cc-live');
-  if(live) live.textContent='Study scheduled: '+study+'. Needed: '+minN+' to '+maxN+'.';
+  if(live) live.textContent='Study scheduled: '+study+' hrs. Needed: '+minN+' to '+maxN+'.';
 }
 
-/* ── CLEAR ALL ── */
+/* ── Clear all ── */
 window.ccClearAll=function(){
   if(!confirm('Clear all commitments from the calendar?')) return;
   for(var t=0;t<TIMES.length;t++) for(var d=0;d<DAYS.length;d++) data[t][d]=null;
@@ -573,8 +580,11 @@ window.ccClearAll=function(){
   clearSel();updateSummary();
 };
 
-/* ── INIT ── */
-buildTable();buildSummarySection();updateSummary();syncTabIndex();
+/* ── Init ── */
+buildTable();
+buildLeftBar();
+updateSummary();
+syncTabIndex();
 
 })();
 </script>
